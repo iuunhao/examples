@@ -1,6 +1,6 @@
 <template>
     <div class="detail">
-        <iframe class="iframe iframe--demos" :src="`examples/${$route.params.url}`" scrolling="yes" />
+        <iframe class="iframe iframe--demos" :src="`./examples/${$route.params.url}`" scrolling="yes" />
         <router-link class="tool" :to="{name: 'home'}"></router-link>
     </div>
 </template>
