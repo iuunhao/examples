@@ -1,0 +1,2785 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>你不需要jQuery</title>
+    <meta name="description" content="如何使有纯JavaScript替代jQuery实现常规的事件、元素、ajax等操作。">
+    <style type="text/css">
+    code[class*="language-"],
+    pre[class*="language-"] {
+        color: inherit;
+        font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        direction: ltr;
+        text-align: left;
+        white-space: pre;
+        word-spacing: normal;
+        word-break: normal;
+        -moz-tab-size: 4;
+        -o-tab-size: 4;
+        tab-size: 4;
+        -webkit-hyphens: none;
+        -moz-hyphens: none;
+        -ms-hyphens: none;
+        hyphens: none;
+    }
+    /* Code blocks */
+    
+    pre[class*="language-"] {
+        padding: 1em;
+        margin: .5em 0;
+        overflow: auto;
+    }
+    
+    :not(pre) > code[class*="language-"],
+    pre[class*="language-"] {
+        background: #f3f3f3;
+    }
+    /* Inline code */
+    
+    :not(pre) > code[class*="language-"] {
+        padding: .1em;
+        border-radius: .3em;
+    }
+    
+    .token.comment,
+    .token.prolog,
+    .token.doctype,
+    .token.cdata {
+        color: slategray;
+    }
+    
+    .token.punctuation {
+        color: #999;
+    }
+    
+    .namespace {
+        opacity: .7;
+    }
+    
+    .token.property,
+    .token.tag,
+    .token.boolean,
+    .token.number,
+    .token.constant,
+    .token.symbol {
+        color: #905;
+    }
+    
+    .token.selector,
+    .token.attr-name,
+    .token.string,
+    .token.builtin {
+        color: #690;
+    }
+    
+    .token.operator,
+    .token.entity,
+    .token.url,
+    .language-css .token.string,
+    .style .token.string,
+    .token.variable {
+        color: #a67f59;
+        background: hsla(0, 0%, 100%, .5);
+    }
+    
+    .token.atrule,
+    .token.attr-value,
+    .token.keyword {
+        color: #07a;
+    }
+    
+    .token.regex,
+    .token.important {
+        color: #e90;
+    }
+    
+    .token.important {
+        font-weight: bold;
+    }
+    
+    .token.entity {
+        cursor: help;
+    }
+    </style>
+    <style type="text/css">
+    *,
+    *:after,
+    *:before {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+    
+    html {
+        overflow-y: scroll;
+    }
+    
+    a {
+        cursor: pointer;
+        color: #08c;
+    }
+    
+    ::-webkit-input-placeholder {
+        color: rgba(0, 0, 0, 0.5);
+    }
+    
+    :-moz-placeholder {
+        color: rgba(0, 0, 0, 0.5);
+    }
+    
+    ::-moz-placeholder {
+        color: rgba(0, 0, 0, 0.5);
+    }
+    
+    :-ms-input-placeholder {
+        color: rgba(0, 0, 0, 0.5);
+    }
+    
+    input[type="search"][required] {
+        -webkit-border-radius: 0;
+        border-radius: 0;
+        position: relative;
+        padding: 0.1rem 1.1rem 0.1rem 0.25rem;
+    }
+    
+    input[type="search"][required]::-ms-clear {
+        display: none;
+    }
+    
+    input[type="search"][required]::-webkit-search-cancel-button {
+        -webkit-appearance: none;
+    }
+    
+    input[type="search"][required]::-webkit-search-cancel-button:after {
+        font-family: Arial, sans-serif;
+        content: "\00D7";
+        display: block;
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 0.85rem;
+        font-size: 0.8rem;
+        text-align: left;
+        cursor: pointer;
+    }
+    
+    input[type="search"][required]:valid::-webkit-search-cancel-button:after {
+        opacity: 1;
+        -ms-filter: none;
+        filter: none;
+    }
+    
+    input[type="search"][required]:invalid::-webkit-search-cancel-button:after {
+        opacity: 0;
+        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+        filter: alpha(opacity=0);
+    }
+    
+    body {
+        font-family: "proxima-nova", "Helvetica Neue", Helvetica, arial, sans-serif;
+        color: #444;
+        margin: 0;
+        -webkit-font-smoothing: antialiased;
+    }
+    
+    .page {
+        background: #fff;
+    }
+    
+    header.page-header {
+        width: 44em;
+        max-width: 100%;
+        padding: 9em 0 2em;
+        margin: 0 auto;
+        text-align: center;
+    }
+    
+    @media (max-width: 840px) {
+        header.page-header {
+            font-size: 12px;
+        }
+    }
+    
+    @media (max-width: 540px) {
+        header.page-header {
+            font-size: 8px;
+            padding-top: 0;
+            width: 100%;
+        }
+    }
+    
+    header.page-header .inner {
+        padding: 3em 2em 2.4em;
+        background: #414141;
+        max-height: 178px;
+    }
+    
+    header.page-header .inner h1 {
+        font-size: 2.5em;
+        font-weight: bold;
+        margin: 0;
+        color: #fff;
+        letter-spacing: 0.1em;
+        line-height: 1;
+    }
+    
+    .explanation {
+        width: 40em;
+        max-width: 100%;
+        padding: 0 1em;
+        margin: auto;
+        text-align: justify;
+    }
+    
+    .explanation .inner {
+        font-size: 1.1em;
+    }
+    
+    @media (min-width: 768px) {
+        .browser {
+            float: right;
+            clear: right;
+            width: 49%;
+        }
+        .browser.jquery {
+            float: left;
+            clear: left;
+            margin-right: 2%;
+        }
+    }
+    
+    .old-ie-message {
+        display: none;
+    }
+    
+    html.old-ie .old-ie-message {
+        display: block;
+        background-color: #ffaeae;
+        padding: 10px;
+        color: #fff;
+    }
+    
+    .empty-message {
+        display: none;
+    }
+    
+    .comparisons.empty .empty-message {
+        display: block;
+        padding: 1em 0;
+        font-size: 1.5em;
+        text-align: center;
+    }
+    
+    .comparison {
+        zoom: 1;
+    }
+    
+    .comparison:before,
+    .comparison:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+    
+    .comparison:after {
+        clear: both;
+    }
+    
+    .comparison h3 {
+        text-align: center;
+        font-size: 2em;
+        font-weight: normal;
+    }
+    
+    .comparison h3 a {
+        position: relative;
+        color: inherit;
+        text-decoration: none;
+    }
+    
+    .comparison h3 a:hover:before {
+        content: '搂';
+        position: absolute;
+        right: 100%;
+        padding-right: 0.3em;
+    }
+    
+    .comparison h4 {
+        font-weight: 200;
+        color: #666;
+        letter-spacing: 0.07em;
+        font-size: 1.4em;
+        text-transform: uppercase;
+        margin-bottom: 0;
+        line-height: 1;
+        display: inline-block;
+    }
+    
+    header.search {
+        zoom: 1;
+        max-width: 40em;
+        margin: 2em auto 0;
+        padding: 0 1em;
+    }
+    
+    header.search:before,
+    header.search:after {
+        content: "";
+        display: table;
+    }
+    
+    header.search:after {
+        clear: both;
+    }
+    
+    header.search input[type="search"] {
+        height: 3em;
+        border: 0;
+        font-family: inherit;
+        font-size: 1.5em;
+        font-weight: 200;
+        letter-spacing: 0.08em;
+        padding-left: 0.52em;
+        margin: 0;
+        color: inherit;
+        opacity: 0.5;
+        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+        filter: alpha(opacity=50);
+        width: 50%;
+        background: rgba(0, 0, 0, 0.1);
+        margin-bottom: 4px;
+        width: 100%;
+        padding: 1em;
+        margin-bottom: 1em;
+    }
+    
+    header.search input[type="search"]::-webkit-search-cancel-button:after {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        height: 1em;
+        font-size: 1em;
+        line-height: 1;
+        font-weight: normal;
+        padding-right: 1em;
+        cursor: pointer;
+    }
+    
+    header.search input[type="search"]:focus {
+        background: rgba(0, 0, 0, 0.05);
+        opacity: 1;
+        -ms-filter: none;
+        filter: none;
+        outline: none;
+    }
+    
+    header.search .field {
+        position: relative;
+    }
+    
+    header.search .field label {
+        padding-right: 10em;
+        font-size: 1.1em;
+        line-height: 1.2em;
+        padding-top: 0em;
+        padding-bottom: 3em;
+        display: block;
+    }
+    
+    header.search .field .slider {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 10em;
+        height: 2em;
+    }
+    
+    .hidden {
+        display: none;
+    }
+    
+    .alternatives-block {
+        text-align: center;
+    }
+    
+    .alternatives-block h4 {
+        font-size: 1.1em;
+        display: inline-block;
+        font-weight: 200;
+        color: #666;
+        letter-spacing: 0.07em;
+        font-size: 1.4em;
+        text-transform: uppercase;
+        margin-bottom: 0;
+        line-height: 1;
+    }
+    
+    .alternatives-block ul {
+        display: inline-block;
+        list-style: none;
+        padding: 0;
+    }
+    
+    .alternatives-block ul li {
+        display: inline-block;
+        padding-left: 10px;
+    }
+    
+    section {
+        /* Hide section titles when they're empty */
+        position: relative;
+        overflow: hidden;
+        background: #fff;
+        padding: 5.5em 0;
+    }
+    
+    section.odd {
+        background: #eee;
+    }
+    
+    section.odd:not(pre) > code[class*="language-"],
+    section.odd pre[class*="language-"] {
+        background: #fff;
+    }
+    
+    section .inner {
+        width: 1200px;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 0 1em;
+    }
+    
+    section .comparison {
+        padding-top: 40px;
+        padding-bottom: -40px;
+    }
+    
+    section h2 {
+        font-size: 3em;
+        font-weight: 100;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: #888;
+        text-align: center;
+        margin: 0;
+    }
+    
+    input[type='range'] {
+        -webkit-appearance: none !important;
+        margin: 0;
+        background-color: #f0f0f0;
+        height: 30px;
+        width: 100%;
+        padding: 4px;
+    }
+    
+    input[type='range']::-webkit-slider-thumb {
+        -webkit-appearance: none !important;
+        height: 20px;
+        width: 20px;
+        border: 2px solid #ccc;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        background-color: #fcfcfc;
+    }
+    
+    .range-label {
+        float: left;
+        width: 33%;
+        text-align: center;
+        padding: 0 4px;
+    }
+    
+    .range-label:first-of-type {
+        text-align: left;
+    }
+    
+    .range-label:last-of-type {
+        text-align: right;
+    }
+    
+    footer {
+        margin: 3em auto;
+        font-size: 1.4em;
+        text-align: center;
+    }
+    
+    footer a {
+        color: inherit;
+    }
+    </style>
+    <script>
+    /**
+     * Prism: Lightweight, robust, elegant syntax highlighting
+     * MIT license http://www.opensource.org/licenses/mit-license.php/
+     * @author Lea Verou http://lea.verou.me
+     */
+    (function() {
+        var e = /\blang(?:uage)?-(?!\*)(\w+)\b/i,
+            t = self.Prism = {
+                util: {
+                    type: function(e) {
+                        return Object.prototype.toString.call(e).match(/\[object (\w+)\]/)[1]
+                    },
+                    clone: function(e) {
+                        var n = t.util.type(e);
+                        switch (n) {
+                            case "Object":
+                                var r = {};
+                                for (var i in e) e.hasOwnProperty(i) && (r[i] = t.util.clone(e[i]));
+                                return r;
+                            case "Array":
+                                return e.slice()
+                        }
+                        return e
+                    }
+                },
+                languages: {
+                    extend: function(e, n) {
+                        var r = t.util.clone(t.languages[e]);
+                        for (var i in n) r[i] = n[i];
+                        return r
+                    },
+                    insertBefore: function(e, n, r, i) {
+                        i = i || t.languages;
+                        var s = i[e],
+                            o = {};
+                        for (var u in s)
+                            if (s.hasOwnProperty(u)) {
+                                if (u == n)
+                                    for (var a in r) r.hasOwnProperty(a) && (o[a] = r[a]);
+                                o[u] = s[u]
+                            }
+                        return i[e] = o
+                    },
+                    DFS: function(e, n) {
+                        for (var r in e) {
+                            n.call(e, r, e[r]);
+                            t.util.type(e) === "Object" && t.languages.DFS(e[r], n)
+                        }
+                    }
+                },
+                highlightAll: function(e, n) {
+                    var r = document.querySelectorAll('code[class*="language-"], [class*="language-"] code, code[class*="lang-"], [class*="lang-"] code');
+                    for (var i = 0, s; s = r[i++];) t.highlightElement(s, e === !0, n)
+                },
+                highlightElement: function(r, i, s) {
+                    var o, u, a = r;
+                    while (a && !e.test(a.className)) a = a.parentNode;
+                    if (a) {
+                        o = (a.className.match(e) || [, ""])[1];
+                        u = t.languages[o]
+                    }
+                    if (!u) return;
+                    r.className = r.className.replace(e, "").replace(/\s+/g, " ") + " language-" + o;
+                    a = r.parentNode;
+                    /pre/i.test(a.nodeName) && (a.className = a.className.replace(e, "").replace(/\s+/g, " ") + " language-" + o);
+                    var f = r.textContent;
+                    if (!f) return;
+                    f = f.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\u00a0/g, " ");
+                    var l = {
+                        element: r,
+                        language: o,
+                        grammar: u,
+                        code: f
+                    };
+                    t.hooks.run("before-highlight", l);
+                    if (i && self.Worker) {
+                        var c = new Worker(t.filename);
+                        c.onmessage = function(e) {
+                            l.highlightedCode = n.stringify(JSON.parse(e.data), o);
+                            t.hooks.run("before-insert", l);
+                            l.element.innerHTML = l.highlightedCode;
+                            s && s.call(l.element);
+                            t.hooks.run("after-highlight", l)
+                        };
+                        c.postMessage(JSON.stringify({
+                            language: l.language,
+                            code: l.code
+                        }))
+                    } else {
+                        l.highlightedCode = t.highlight(l.code, l.grammar, l.language);
+                        t.hooks.run("before-insert", l);
+                        l.element.innerHTML = l.highlightedCode;
+                        s && s.call(r);
+                        t.hooks.run("after-highlight", l)
+                    }
+                },
+                highlight: function(e, r, i) {
+                    return n.stringify(t.tokenize(e, r), i)
+                },
+                tokenize: function(e, n, r) {
+                    var i = t.Token,
+                        s = [e],
+                        o = n.rest;
+                    if (o) {
+                        for (var u in o) n[u] = o[u];
+                        delete n.rest
+                    }
+                    e: for (var u in n) {
+                        if (!n.hasOwnProperty(u) || !n[u]) continue;
+                        var a = n[u],
+                            f = a.inside,
+                            l = !!a.lookbehind,
+                            c = 0;
+                        a = a.pattern || a;
+                        for (var h = 0; h < s.length; h++) {
+                            var p = s[h];
+                            if (s.length > e.length) break e;
+                            if (p instanceof i) continue;
+                            a.lastIndex = 0;
+                            var d = a.exec(p);
+                            if (d) {
+                                l && (c = d[1].length);
+                                var v = d.index - 1 + c,
+                                    d = d[0].slice(c),
+                                    m = d.length,
+                                    g = v + m,
+                                    y = p.slice(0, v + 1),
+                                    b = p.slice(g + 1),
+                                    w = [h, 1];
+                                y && w.push(y);
+                                var E = new i(u, f ? t.tokenize(d, f) : d);
+                                w.push(E);
+                                b && w.push(b);
+                                Array.prototype.splice.apply(s, w)
+                            }
+                        }
+                    }
+                    return s
+                },
+                hooks: {
+                    all: {},
+                    add: function(e, n) {
+                        var r = t.hooks.all;
+                        r[e] = r[e] || [];
+                        r[e].push(n)
+                    },
+                    run: function(e, n) {
+                        var r = t.hooks.all[e];
+                        if (!r || !r.length) return;
+                        for (var i = 0, s; s = r[i++];) s(n)
+                    }
+                }
+            },
+            n = t.Token = function(e, t) {
+                this.type = e;
+                this.content = t
+            };
+        n.stringify = function(e, r, i) {
+            if (typeof e == "string") return e;
+            if (Object.prototype.toString.call(e) == "[object Array]") return e.map(function(t) {
+                return n.stringify(t, r, e)
+            }).join("");
+            var s = {
+                type: e.type,
+                content: n.stringify(e.content, r, i),
+                tag: "span",
+                classes: ["token", e.type],
+                attributes: {},
+                language: r,
+                parent: i
+            };
+            s.type == "comment" && (s.attributes.spellcheck = "true");
+            t.hooks.run("wrap", s);
+            var o = "";
+            for (var u in s.attributes) o += u + '="' + (s.attributes[u] || "") + '"';
+            return "<" + s.tag + ' class="' + s.classes.join(" ") + '" ' + o + ">" + s.content + "</" + s.tag + ">"
+        };
+        if (!self.document) {
+            self.addEventListener("message", function(e) {
+                var n = JSON.parse(e.data),
+                    r = n.language,
+                    i = n.code;
+                self.postMessage(JSON.stringify(t.tokenize(i, t.languages[r])));
+                self.close()
+            }, !1);
+            return
+        }
+        var r = document.getElementsByTagName("script");
+        r = r[r.length - 1];
+        if (r) {
+            t.filename = r.src;
+            document.addEventListener && !r.hasAttribute("data-manual") && document.addEventListener("DOMContentLoaded", t.highlightAll)
+        }
+    })();;
+    Prism.languages.css = {
+        comment: /\/\*[\w\W]*?\*\//g,
+        atrule: {
+            pattern: /@[\w-]+?.*?(;|(?=\s*{))/gi,
+            inside: {
+                punctuation: /[;:]/g
+            }
+        },
+        url: /url\((["']?).*?\1\)/gi,
+        selector: /[^\{\}\s][^\{\};]*(?=\s*\{)/g,
+        property: /(\b|\B)[\w-]+(?=\s*:)/ig,
+        string: /("|')(\\?.)*?\1/g,
+        important: /\B!important\b/gi,
+        ignore: /&(lt|gt|amp);/gi,
+        punctuation: /[\{\};:]/g
+    };
+    Prism.languages.markup && Prism.languages.insertBefore("markup", "tag", {
+        style: {
+            pattern: /(&lt;|<)style[\w\W]*?(>|&gt;)[\w\W]*?(&lt;|<)\/style(>|&gt;)/ig,
+            inside: {
+                tag: {
+                    pattern: /(&lt;|<)style[\w\W]*?(>|&gt;)|(&lt;|<)\/style(>|&gt;)/ig,
+                    inside: Prism.languages.markup.tag.inside
+                },
+                rest: Prism.languages.css
+            }
+        }
+    });;
+    Prism.languages.clike = {
+        comment: {
+            pattern: /(^|[^\\])(\/\*[\w\W]*?\*\/|(^|[^:])\/\/.*?(\r?\n|$))/g,
+            lookbehind: !0
+        },
+        string: /("|')(\\?.)*?\1/g,
+        "class-name": {
+            pattern: /((?:(?:class|interface|extends|implements|trait|instanceof|new)\s+)|(?:catch\s+\())[a-z0-9_\.\\]+/ig,
+            lookbehind: !0,
+            inside: {
+                punctuation: /(\.|\\)/
+            }
+        },
+        keyword: /\b(if|else|while|do|for|return|in|instanceof|function|new|try|throw|catch|finally|null|break|continue)\b/g,
+        "boolean": /\b(true|false)\b/g,
+        "function": {
+            pattern: /[a-z0-9_]+\(/ig,
+            inside: {
+                punctuation: /\(/
+            }
+        },
+        number: /\b-?(0x[\dA-Fa-f]+|\d*\.?\d+([Ee]-?\d+)?)\b/g,
+        operator: /[-+]{1,2}|!|&lt;=?|>=?|={1,3}|(&amp;){1,2}|\|?\||\?|\*|\/|\~|\^|\%/g,
+        ignore: /&(lt|gt|amp);/gi,
+        punctuation: /[{}[\];(),.:]/g
+    };;
+    Prism.languages.javascript = Prism.languages.extend("clike", {
+        keyword: /\b(var|let|if|else|while|do|for|return|in|instanceof|function|new|with|typeof|try|throw|catch|finally|null|break|continue)\b/g,
+        number: /\b-?(0x[\dA-Fa-f]+|\d*\.?\d+([Ee]-?\d+)?|NaN|-?Infinity)\b/g
+    });
+    Prism.languages.insertBefore("javascript", "keyword", {
+        regex: {
+            pattern: /(^|[^/])\/(?!\/)(\[.+?]|\\.|[^/\r\n])+\/[gim]{0,3}(?=\s*($|[\r\n,.;})]))/g,
+            lookbehind: !0
+        }
+    });
+    Prism.languages.markup && Prism.languages.insertBefore("markup", "tag", {
+        script: {
+            pattern: /(&lt;|<)script[\w\W]*?(>|&gt;)[\w\W]*?(&lt;|<)\/script(>|&gt;)/ig,
+            inside: {
+                tag: {
+                    pattern: /(&lt;|<)script[\w\W]*?(>|&gt;)|(&lt;|<)\/script(>|&gt;)/ig,
+                    inside: Prism.languages.markup.tag.inside
+                },
+                rest: Prism.languages.javascript
+            }
+        }
+    });;
+    </script>
+    <script>
+    (function() {
+        var filter, hide, setMinVersion, showFirst,
+            __slice = [].slice;
+
+        showFirst = function() {
+            var el, els, found, _i, _len, _results;
+            els = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+            found = false;
+            _results = [];
+            for (_i = 0, _len = els.length; _i < _len; _i++) {
+                el = els[_i];
+                if (el && !found) {
+                    found = true;
+                    _results.push(el.style.display = 'block');
+                } else if (el) {
+                    _results.push(el.style.display = 'none');
+                } else {
+                    _results.push(void 0);
+                }
+            }
+            return _results;
+        };
+
+        hide = function() {
+            var el, els, _i, _len, _results;
+            els = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+            _results = [];
+            for (_i = 0, _len = els.length; _i < _len; _i++) {
+                el = els[_i];
+                if (el) {
+                    _results.push(el.style.display = 'none');
+                }
+            }
+            return _results;
+        };
+
+        setMinVersion = function(version) {
+            var block, blocks, section, versions, _i, _j, _len, _len1, _ref, _results;
+            if (version == null) {
+                version = 10;
+            }
+            version = parseInt(version);
+            _ref = document.querySelectorAll('.comparison');
+            _results = [];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                section = _ref[_i];
+                blocks = section.querySelectorAll('.browser');
+                versions = {};
+                for (_j = 0, _len1 = blocks.length; _j < _len1; _j++) {
+                    block = blocks[_j];
+                    versions[block.getAttribute('data-browser')] = block;
+                }
+                switch (version) {
+                    case 8:
+                        showFirst(versions['ie8']);
+                        _results.push(hide(versions['ie9'], versions['ie10']));
+                        break;
+                    case 9:
+                        showFirst(versions['ie9'], versions['ie8']);
+                        _results.push(hide(versions['ie10']));
+                        break;
+                    case 10:
+                        _results.push(showFirst(versions['ie10'], versions['ie9'], versions['ie8']));
+                        break;
+                    default:
+                        _results.push(void 0);
+                }
+            }
+            return _results;
+        };
+
+        filter = function(term) {
+            var allEmpty, comp, comparisons, empty, section, visibleIndex, _i, _j, _len, _len1, _ref, _ref1;
+            visibleIndex = 0;
+            allEmpty = true;
+            _ref = document.querySelectorAll('section');
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                section = _ref[_i];
+                empty = true;
+                _ref1 = section.querySelectorAll('.comparison');
+                for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+                    comp = _ref1[_j];
+                    if (!term || comp.textContent.toLowerCase().indexOf(term.toLowerCase()) !== -1) {
+                        empty = false;
+                        comp.classList.remove('hidden');
+                    } else {
+                        comp.classList.add('hidden');
+                    }
+                }
+                if (empty) {
+                    section.classList.add('hidden');
+                } else {
+                    allEmpty = false;
+                    section.classList.remove('hidden');
+                    if (++visibleIndex % 2) {
+                        section.classList.add('odd');
+                    } else {
+                        section.classList.remove('odd');
+                    }
+                }
+            }
+            comparisons = document.querySelector('.comparisons');
+            if (allEmpty) {
+                return comparisons.classList.add('empty');
+            } else {
+                return comparisons.classList.remove('empty');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var handleChange, search, slider;
+            slider = document.querySelector('.version-slider');
+            (handleChange = function() {
+                return setMinVersion(slider.value);
+            })();
+            slider.addEventListener('change', handleChange);
+            search = document.querySelector('input[type="search"]');
+            return search.addEventListener('input', function() {
+                return filter(search.value);
+            });
+        });
+
+    }).call(this);
+    </script>
+</head>
+
+<body>
+    <div class="page">
+        <div class="comparisons">
+            <section id="elements" class="odd">
+                <div class="inner">
+                    <h2>元素操作</h2>
+                    <div id="add_class" class="comparison">
+                        <h3><a href="#add_class">Add Class</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).addClass(className);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>if (el.classList)
+  el.classList.add(className);
+else
+  el.className += ' ' + className;
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie10" class="browser ie10">
+                            <h4>谷歌浏览器，火狐浏览器，IE10+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.classList.add(className);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="after" class="comparison">
+                        <h3><a href="#after">After</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).after(htmlString);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.insertAdjacentHTML('afterend', htmlString);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="append" class="comparison">
+                        <h3><a href="#append">Append</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(parent).append(el);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>parent.appendChild(el);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="before" class="comparison">
+                        <h3><a href="#before">Before</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).before(htmlString);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.insertAdjacentHTML('beforebegin', htmlString);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="children" class="comparison">
+                        <h3><a href="#children">Children</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).children();
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>var children = [];
+for (var i = el.children.length; i--;) {
+  // Skip comment nodes on IE8
+  if (el.children[i].nodeType != 8)
+    children.unshift(el.children[i]);
+}
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.children
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="clone" class="comparison">
+                        <h3><a href="#clone">Clone</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).clone();
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.cloneNode(true);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="contains" class="comparison">
+                        <h3><a href="#contains">Contains</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$.contains(el, child);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el !== child &amp;&amp; el.contains(child);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="contains_selector" class="comparison">
+                        <h3><a href="#contains_selector">Contains Selector</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).find(selector).length;
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.querySelector(selector) !== null
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="each" class="comparison">
+                        <h3><a href="#each">Each</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(selector).each(function(i, el){
+
+});
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>function forEachElement(selector, fn) {
+  var elements = document.querySelectorAll(selector);
+  for (var i = 0; i &lt; elements.length; i++)
+    fn(elements[i], i);
+}
+
+forEachElement(selector, function(el, i){
+
+});
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>var elements = document.querySelectorAll(selector);
+Array.prototype.forEach.call(elements, function(el, i){
+
+});
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="empty" class="comparison">
+                        <h3><a href="#empty">Empty</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).empty();
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>while(el.firstChild)
+  el.removeChild(el.firstChild);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.innerHTML = '';
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="filter" class="comparison">
+                        <h3><a href="#filter">过滤</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(selector).filter(filterFn);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>function filter(selector, filterFn) {
+  var elements = document.querySelectorAll(selector);
+  var out = [];
+  for (var i = elements.length; i--;) {
+    if (filterFn(elements[i]))
+      out.unshift(elements[i]);
+  }
+  return out;
+}
+
+filter(selector, filterFn);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>Array.prototype.filter.call(document.querySelectorAll(selector), filterFn);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="find_children" class="comparison">
+                        <h3><a href="#find_children">查找子元素</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).find(selector);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.querySelectorAll(selector);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="find_elements" class="comparison">
+                        <h3><a href="#find_elements">查找</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$('.my #awesome selector');
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>document.querySelectorAll('.my #awesome selector');
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="get_attributes" class="comparison">
+                        <h3><a href="#get_attributes">获取属性值</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).attr('tabindex');
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.getAttribute('tabindex');
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="get_html" class="comparison">
+                        <h3><a href="#get_html">获取Html内容</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).html();
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.innerHTML
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="get_outer_html" class="comparison">
+                        <h3><a href="#get_outer_html">获取外层Html内容</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$('&lt;div&gt;').append($(el).clone()).html();
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.outerHTML
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="get_style" class="comparison">
+                        <h3><a href="#get_style">获取CSS样式</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).css(ruleName);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>// Varies based on the properties being retrieved, some can be retrieved from el.currentStyle
+// https://github.com/jonathantneal/Polyfills-for-IE8/blob/master/getComputedStyle.js
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>getComputedStyle(el)[ruleName];
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="get_text" class="comparison">
+                        <h3><a href="#get_text">获取文本内容</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).text();
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.textContent || el.innerText
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.textContent
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="has_class" class="comparison">
+                        <h3><a href="#has_class">Has Class</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).hasClass(className);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>if (el.classList)
+  el.classList.contains(className);
+else
+  new RegExp('(^| )' + className + '( |$)', 'gi').test(el.className);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie10" class="browser ie10">
+                            <h4>谷歌浏览器，火狐浏览器，IE10+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.classList.contains(className);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="matches" class="comparison">
+                        <h3><a href="#matches">元素比较</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).is($(otherEl));
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el === otherEl
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="matches_selector" class="comparison">
+                        <h3><a href="#matches_selector">比较类名</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).is('.my-class');
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>var matches = function(el, selector) {
+  var _matches = (el.matches || el.matchesSelector || el.msMatchesSelector || el.mozMatchesSelector || el.webkitMatchesSelector || el.oMatchesSelector);
+
+  if (_matches) {
+    return _matches.call(el, selector);
+  } else {
+    var nodes = el.parentNode.querySelectorAll(selector);
+    for (var i = nodes.length; i--;) {
+      if (nodes[i] === el)
+        return true;
+    }
+    return false;
+  }
+};
+
+matches(el, '.my-class');
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>var matches = function(el, selector) {
+  return (el.matches || el.matchesSelector || el.msMatchesSelector || el.mozMatchesSelector || el.webkitMatchesSelector || el.oMatchesSelector).call(el, selector);
+};
+
+matches(el, '.my-class');
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="next" class="comparison">
+                        <h3><a href="#next">Next</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).next();
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>// nextSibling can include text nodes
+function nextElementSibling(el) {
+  do { el = el.nextSibling; } while ( el &amp;&amp; el.nodeType !== 1 );
+  return el;
+}
+
+el.nextElementSibling || nextElementSibling(el);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.nextElementSibling
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="offset" class="comparison">
+                        <h3><a href="#offset">Offset</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).offset();
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>var rect = el.getBoundingClientRect()
+
+{
+  top: rect.top + document.body.scrollTop,
+  left: rect.left + document.body.scrollLeft
+}
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="offset_parent" class="comparison">
+                        <h3><a href="#offset_parent">Offset Parent</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).offsetParent();
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.offsetParent || el
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="outer_height" class="comparison">
+                        <h3><a href="#outer_height">Outer Height</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).outerHeight();
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.offsetHeight
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="outer_height_with_margin" class="comparison">
+                        <h3><a href="#outer_height_with_margin">Outer Height With Margin</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).outerHeight(true);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>function outerHeight(el) {
+  var height = el.offsetHeight;
+  var style = el.currentStyle || getComputedStyle(el);
+
+  height += parseInt(style.marginTop) + parseInt(style.marginBottom);
+  return height;
+}
+
+outerHeight(el);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>function outerHeight(el) {
+  var height = el.offsetHeight;
+  var style = getComputedStyle(el);
+
+  height += parseInt(style.marginTop) + parseInt(style.marginBottom);
+  return height;
+}
+
+outerHeight(el);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="outer_width_with_margin" class="comparison">
+                        <h3><a href="#outer_width_with_margin">Outer Width With Margin</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).outerWidth(true);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>function outerWidth(el) {
+  var width = el.offsetWidth;
+  var style = el.currentStyle || getComputedStyle(el);
+
+  width += parseInt(style.marginLeft) + parseInt(style.marginRight);
+  return width;
+}
+
+outerWidth(el);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>function outerWidth(el) {
+  var width = el.offsetWidth;
+  var style = getComputedStyle(el);
+
+  width += parseInt(style.marginLeft) + parseInt(style.marginRight);
+  return width;
+}
+
+outerWidth(el);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="outer_width" class="comparison">
+                        <h3><a href="#outer_width">Outer Width</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).outerWidth();
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.offsetWidth
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="parent" class="comparison">
+                        <h3><a href="#parent">Parent</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).parent();
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.parentNode
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="position" class="comparison">
+                        <h3><a href="#position">Position</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).position();
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>{left: el.offsetLeft, top: el.offsetTop}
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="position_relative_to_viewport" class="comparison">
+                        <h3><a href="#position_relative_to_viewport">Position Relative To Viewport</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>var offset = el.offset();
+
+{
+  top: offset.top - document.body.scrollTop,
+  left: offset.left - document.body.scrollLeft
+}
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.getBoundingClientRect()
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="prepend" class="comparison">
+                        <h3><a href="#prepend">Prepend</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(parent).prepend(el);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>parent.insertBefore(el, parent.firstChild);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="prev" class="comparison">
+                        <h3><a href="#prev">Prev</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).prev();
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>// prevSibling can include text nodes
+function previousElementSibling(el) {
+  do { el = el.previousSibling; } while ( el &amp;&amp; el.nodeType !== 1 );
+  return el;
+}
+
+el.previousElementSibling || previousElementSibling(el);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.previousElementSibling
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="remove" class="comparison">
+                        <h3><a href="#remove">Remove</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).remove();
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.parentNode.removeChild(el);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="remove_class" class="comparison">
+                        <h3><a href="#remove_class">Remove Class</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).removeClass(className);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>if (el.classList)
+  el.classList.remove(className);
+else
+  el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie10" class="browser ie10">
+                            <h4>谷歌浏览器，火狐浏览器，IE10+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.classList.remove(className);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="replace_from_html" class="comparison">
+                        <h3><a href="#replace_from_html">Replace From Html</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).replaceWith(string);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.outerHTML = string;
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="set_attributes" class="comparison">
+                        <h3><a href="#set_attributes">Set Attributes</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).attr('tabindex', 3);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.setAttribute('tabindex', 3);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="set_html" class="comparison">
+                        <h3><a href="#set_html">Set Html</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).html(string);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.innerHTML = string;
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="set_style" class="comparison">
+                        <h3><a href="#set_style">Set Style</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).css('border-width', '20px');
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>// Use a class if possible
+el.style.borderWidth = '20px';
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="set_text" class="comparison">
+                        <h3><a href="#set_text">Set Text</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).text(string);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>if (el.textContent !== undefined)
+  el.textContent = string;
+else
+  el.innerText = string;
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.textContent = string;
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="siblings" class="comparison">
+                        <h3><a href="#siblings">Siblings</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).siblings();
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>var siblings = Array.prototype.slice.call(el.parentNode.children);
+
+for (var i = siblings.length; i--;) {
+  if (siblings[i] === el) {
+    siblings.splice(i, 1);
+    break;
+  }
+}
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>Array.prototype.filter.call(el.parentNode.children, function(child){
+  return child !== el;
+});
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="toggle_class" class="comparison">
+                        <h3><a href="#toggle_class">Toggle Class</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).toggleClass(className);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>if (el.classList) {
+  el.classList.toggle(className);
+} else {
+    var classes = el.className.split(' ');
+    var existingIndex = -1;
+    for (var i = classes.length; i--;) {
+      if (classes[i] === className)
+        existingIndex = i;
+    }
+
+    if (existingIndex &gt;= 0)
+      classes.splice(existingIndex, 1);
+    else
+      classes.push(className);
+
+  el.className = classes.join(' ');
+}
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>if (el.classList) {
+  el.classList.toggle(className);
+} else {
+  var classes = el.className.split(' ');
+  var existingIndex = classes.indexOf(className);
+
+  if (existingIndex &gt;= 0)
+    classes.splice(existingIndex, 1);
+  else
+    classes.push(className);
+
+  el.className = classes.join(' ');
+}
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie10" class="browser ie10">
+                            <h4>谷歌浏览器，火狐浏览器，IE10+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.classList.toggle(className);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="events">
+                <div class="inner">
+                    <h2>事件</h2>
+                    <div id="off" class="comparison">
+                        <h3><a href="#off">Off</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).off(eventName, eventHandler);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>function removeEventListener(el, eventName, handler) {
+  if (el.removeEventListener)
+    el.removeEventListener(eventName, handler);
+  else
+    el.detachEvent('on' + eventName, handler);
+}
+
+removeEventListener(el, eventName, handler);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.removeEventListener(eventName, eventHandler);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="on" class="comparison">
+                        <h3><a href="#on">On</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).on(eventName, eventHandler);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>function addEventListener(el, eventName, handler) {
+  if (el.addEventListener) {
+    el.addEventListener(eventName, handler);
+  } else {
+    el.attachEvent('on' + eventName, function(){
+      handler.call(el);
+    });
+  }
+}
+
+addEventListener(el, eventName, handler);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>el.addEventListener(eventName, eventHandler);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="ready" class="comparison">
+                        <h3><a href="#ready">Ready</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(document).ready(function(){
+
+});
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>function ready(fn) {
+  if (document.readyState != 'loading'){
+    fn();
+  } else if (document.addEventListener) {
+    document.addEventListener('DOMContentLoaded', fn);
+  } else {
+    document.attachEvent('onreadystatechange', function() {
+      if (document.readyState != 'loading')
+        fn();
+    });
+  }
+}
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>function ready(fn) {
+  if (document.readyState != 'loading'){
+    fn();
+  } else {
+    document.addEventListener('DOMContentLoaded', fn);
+  }
+}
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="trigger_custom" class="comparison">
+                        <h3><a href="#trigger_custom">指定事件触发</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).trigger('my-event', {some: 'data'});
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>// Custom events are not natively supported, so you have to hijack a random
+// event.
+//
+// Just use jQuery.
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>if (window.CustomEvent) {
+  var event = new CustomEvent('my-event', {detail: {some: 'data'}});
+} else {
+  var event = document.createEvent('CustomEvent');
+  event.initCustomEvent('my-event', true, true, {some: 'data'});
+}
+
+el.dispatchEvent(event);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="trigger_native" class="comparison">
+                        <h3><a href="#trigger_native">Trigger Native</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$(el).trigger('change');
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>if (document.createEvent) {
+  var event = document.createEvent('HTMLEvents');
+  event.initEvent('change', true, false);
+  el.dispatchEvent(event);
+} else {
+  el.fireEvent('onchange');
+}
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>// For a full list of event types: https://developer.mozilla.org/en-US/docs/Web/API/document.createEvent
+var event = document.createEvent('HTMLEvents');
+event.initEvent('change', true, false);
+el.dispatchEvent(event);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="utils" class="odd">
+                <div class="inner">
+                    <h2>技巧</h2>
+                    <div id="array_each" class="comparison">
+                        <h3><a href="#array_each">Array Each</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$.each(array, function(i, item){
+
+});
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>function forEach(array, fn) {
+  for (i = 0; i &lt; array.length; i++)
+    fn(array[i], i);
+}
+
+forEach(array, function(item, i){
+
+});
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>array.forEach(function(item, i){
+
+});
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="deep_extend" class="comparison">
+                        <h3><a href="#deep_extend">深度扩展</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$.extend(true, {}, objA, objB);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>var deepExtend = function(out) {
+  out = out || {};
+
+  for (var i = 1; i &lt; arguments.length; i++) {
+    var obj = arguments[i];
+
+    if (!obj)
+      continue;
+
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        if (typeof obj[key] === 'object')
+          deepExtend(out[key], obj[key]);
+        else
+          out[key] = obj[key];
+      }
+    }
+  }
+
+  return out;
+};
+
+deepExtend({}, objA, objB);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="bind" class="comparison">
+                        <h3><a href="#bind">Bind</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$.proxy(fn, context);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>fn.apply(context, arguments);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>fn.bind(context);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-browser="jquery" class="browser jquery">
+                        <h4>jQuery</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>$.extend({}, objA, objB);
+</code></pre>
+                        </div>
+                    </div>
+                    <div data-browser="ie8" class="browser ie8">
+                        <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>var extend = function(out) {
+  out = out || {};
+
+  for (var i = 1; i &lt; arguments.length; i++) {
+    if (!arguments[i])
+      continue;
+
+    for (var key in arguments[i]) {
+      if (arguments[i].hasOwnProperty(key))
+        out[key] = arguments[i][key];
+    }
+  }
+
+  return out;
+};
+
+extend({}, objA, objB);
+</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div id="index_of" class="comparison">
+                    <div class="inner">
+                        <h3><a href="#index_of">Index Of</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$.inArray(item, array);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>function indexOf(array, item) {
+  for (var i = 0; i &lt; array.length; i++) {
+    if (array[i] === item)
+      return i;
+  }
+  return -1;
+}
+
+indexOf(array, item);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>array.indexOf(item);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="is_array" class="comparison">
+                    <div class="inner">
+                        <h3><a href="#is_array">Is Array</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$.isArray(arr);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>isArray = Array.isArray || function(arr) {
+  return Object.prototype.toString.call(arr) == '[object Array]';
+}
+
+isArray(arr);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>Array.isArray(arr);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="map" class="comparison">
+                    <div class="inner">
+                        <h3><a href="#map">Map</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$.map(array, function(value, index){
+
+});
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>function map(arr, fn) {
+  var results = [];
+  for (var i = 0; i &lt; arr.length; i++)
+    results.push(fn(arr[i], i));
+  return results;
+}
+
+map(array, function(value, index){
+
+});
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>array.map(function(value, index){
+
+});
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="now" class="comparison">
+                    <div class="inner">
+                        <h3><a href="#now">Now</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$.now();
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>new Date().getTime();
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>Date.now();
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="parse_html" class="comparison">
+                    <div class="inner">
+                        <h3><a href="#parse_html">Parse Html</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$.parseHTML(htmlString);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>var parseHTML = function(str) {
+  var el = document.createElement('div');
+  el.innerHTML = str;
+  return el.children;
+};
+
+parseHTML(htmlString);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>var parseHTML = function(str) {
+  var tmp = document.implementation.createHTMLDocument();
+  tmp.body.innerHTML = str;
+  return tmp.body.children;
+};
+
+parseHTML(htmlString);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="parse_json" class="comparison">
+                    <div class="inner">
+                        <h3><a href="#parse_json">解析 Json</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$.parseJSON(string);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>JSON.parse(string);
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="trim" class="comparison">
+                    <div class="inner">
+                        <h3><a href="#trim">Trim</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$.trim(string);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>string.replace(/^\s+|\s+$/g, '');
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie9" class="browser ie9">
+                            <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>string.trim();
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="type" class="comparison">
+                    <div class="inner">
+                        <h3><a href="#type">Type</a></h3>
+                        <div data-browser="jquery" class="browser jquery">
+                            <h4>jQuery</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>$.type(obj);
+</code></pre>
+                            </div>
+                        </div>
+                        <div data-browser="ie8" class="browser ie8">
+                            <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                            <div data-lang="javascript" class="code-block language-javascript">
+                                <pre><code>Object.prototype.toString.call(obj)
+                .replace(/^\[object (.+)\]$/, &quot;$1&quot;)
+                .toLowerCase();
+</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        </section>
+        <section id="ajax" class="odd">
+            <div class="inner">
+                <h2>AJAX</h2>
+                <div id="json" class="comparison">
+                    <h3><a href="#json">JSON</a></h3>
+                    <div data-browser="jquery" class="browser jquery">
+                        <h4>jQuery</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>$.getJSON('/my/url', function(data) {
+
+});
+</code></pre>
+                        </div>
+                    </div>
+                    <div data-browser="ie8" class="browser ie8">
+                        <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>var request = new XMLHttpRequest();
+request.open('GET', '/my/url', true);
+
+request.onreadystatechange = function() {
+  if (this.readyState === 4) {
+    if (this.status &gt;= 200 &amp;&amp; this.status &lt; 400) {
+      // Success!
+      var data = JSON.parse(this.responseText);
+    } else {
+      // Error :(
+    }
+  }
+};
+
+request.send();
+request = null;
+</code></pre>
+                        </div>
+                    </div>
+                    <div data-browser="ie9" class="browser ie9">
+                        <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>var request = new XMLHttpRequest();
+request.open('GET', '/my/url', true);
+
+request.onload = function() {
+  if (request.status &gt;= 200 &amp;&amp; request.status &lt; 400) {
+    // Success!
+    var data = JSON.parse(request.responseText);
+  } else {
+    // We reached our target server, but it returned an error
+
+  }
+};
+
+request.onerror = function() {
+  // There was a connection error of some sort
+};
+
+request.send();
+</code></pre>
+                        </div>
+                    </div>
+                    <div data-browser="ie10" class="browser ie10">
+                        <h4>谷歌浏览器，火狐浏览器，IE10+</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>var request = new XMLHttpRequest();
+request.open('GET', '/my/url', true);
+
+request.onload = function() {
+  if (this.status &gt;= 200 &amp;&amp; this.status &lt; 400) {
+    // Success!
+    var data = JSON.parse(this.response);
+  } else {
+    // We reached our target server, but it returned an error
+
+  }
+};
+
+request.onerror = function() {
+  // There was a connection error of some sort
+};
+
+request.send();
+</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div id="post" class="comparison">
+                    <h3><a href="#post">Post</a></h3>
+                    <div data-browser="jquery" class="browser jquery">
+                        <h4>jQuery</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>$.ajax({
+  type: 'POST',
+  url: '/my/url',
+  data: data
+});
+</code></pre>
+                        </div>
+                    </div>
+                    <div data-browser="ie8" class="browser ie8">
+                        <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>var request = new XMLHttpRequest();
+request.open('POST', '/my/url', true);
+request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+request.send(data);
+</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div id="request" class="comparison">
+                    <h3><a href="#request">Request</a></h3>
+                    <div data-browser="jquery" class="browser jquery">
+                        <h4>jQuery</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>$.ajax({
+  type: 'GET',
+  url: '/my/url',
+  success: function(resp) {
+
+  },
+  error: function() {
+
+  }
+});
+</code></pre>
+                        </div>
+                    </div>
+                    <div data-browser="ie8" class="browser ie8">
+                        <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>var request = new XMLHttpRequest();
+request.open('GET', '/my/url', true);
+
+request.onreadystatechange = function() {
+  if (this.readyState === 4) {
+    if (this.status &gt;= 200 &amp;&amp; this.status &lt; 400) {
+      // Success!
+      var resp = this.responseText;
+    } else {
+      // Error :(
+    }
+  }
+};
+
+request.send();
+request = null;
+</code></pre>
+                        </div>
+                    </div>
+                    <div data-browser="ie9" class="browser ie9">
+                        <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>var request = new XMLHttpRequest();
+request.open('GET', '/my/url', true);
+
+request.onload = function() {
+  if (request.status &gt;= 200 &amp;&amp; request.status &lt; 400) {
+    // Success!
+    var resp = request.responseText;
+  } else {
+    // We reached our target server, but it returned an error
+
+  }
+};
+
+request.onerror = function() {
+  // There was a connection error of some sort
+};
+
+request.send();
+</code></pre>
+                        </div>
+                    </div>
+                    <div data-browser="ie10" class="browser ie10">
+                        <h4>谷歌浏览器，火狐浏览器，IE10+</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>var request = new XMLHttpRequest();
+request.open('GET', '/my/url', true);
+
+request.onload = function() {
+  if (this.status &gt;= 200 &amp;&amp; this.status &lt; 400) {
+    // Success!
+    var resp = this.response;
+  } else {
+    // We reached our target server, but it returned an error
+
+  }
+};
+
+request.onerror = function() {
+  // There was a connection error of some sort
+};
+
+request.send();
+</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="effects">
+            <div class="inner">
+                <h2>特效</h2>
+                <div id="fade_in" class="comparison">
+                    <h3><a href="#fade_in">淡入淡出</a></h3>
+                    <div data-browser="jquery" class="browser jquery">
+                        <h4>jQuery</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>$(el).fadeIn();
+</code></pre>
+                        </div>
+                    </div>
+                    <div data-browser="ie8" class="browser ie8">
+                        <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>function fadeIn(el) {
+  var opacity = 0;
+
+  el.style.opacity = 0;
+  el.style.filter = '';
+
+  var last = +new Date();
+  var tick = function() {
+    opacity += (new Date() - last) / 400;
+    el.style.opacity = opacity;
+    el.style.filter = 'alpha(opacity=' + (100 * opacity)|0 + ')';
+
+    last = +new Date();
+
+    if (opacity &lt; 1) {
+      (window.requestAnimationFrame &amp;&amp; requestAnimationFrame(tick)) || setTimeout(tick, 16);
+    }
+  };
+
+  tick();
+}
+
+fadeIn(el);
+</code></pre>
+                        </div>
+                    </div>
+                    <div data-browser="ie9" class="browser ie9">
+                        <h4>谷歌浏览器，火狐浏览器，IE9+</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>function fadeIn(el) {
+  el.style.opacity = 0;
+
+  var last = +new Date();
+  var tick = function() {
+    el.style.opacity = +el.style.opacity + (new Date() - last) / 400;
+    last = +new Date();
+
+    if (+el.style.opacity &lt; 1) {
+      (window.requestAnimationFrame &amp;&amp; requestAnimationFrame(tick)) || setTimeout(tick, 16)
+    }
+  };
+
+  tick();
+}
+
+fadeIn(el);
+</code></pre>
+                        </div>
+                    </div>
+                    <div data-browser="ie10" class="browser ie10">
+                        <h4>谷歌浏览器，火狐浏览器，IE10+</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>el.classList.add('show');
+el.classList.remove('hide');
+</code></pre>
+                        </div>
+                        <div data-lang="css" class="code-block language-css">
+                            <pre><code>.show {
+  transition: opacity 400ms;
+}
+.hide {
+  opacity: 0;
+}
+</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div id="hide" class="comparison">
+                    <h3><a href="#hide">Hide</a></h3>
+                    <div data-browser="jquery" class="browser jquery">
+                        <h4>jQuery</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>$(el).hide();
+</code></pre>
+                        </div>
+                    </div>
+                    <div data-browser="ie8" class="browser ie8">
+                        <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>el.style.display = 'none';
+</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div id="show" class="comparison">
+                    <h3><a href="#show">Show</a></h3>
+                    <div data-browser="jquery" class="browser jquery">
+                        <h4>jQuery</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>$(el).show();
+</code></pre>
+                        </div>
+                    </div>
+                    <div data-browser="ie8" class="browser ie8">
+                        <h4>谷歌浏览器，火狐浏览器，IE8+</h4>
+                        <div data-lang="javascript" class="code-block language-javascript">
+                            <pre><code>el.style.display = '';
+</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    </div>
+</body>
+
+</html>

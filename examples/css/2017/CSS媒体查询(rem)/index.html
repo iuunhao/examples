@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>index</title>
+    <style type="text/css">
+    /*reset*/
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    html,
+    body {
+        height: 100%;
+        font-size: 14px;
+        color: #333;
+        background-color: #fff;
+    }
+    /*rem定义*/
+    
+    @media screen and (min-width: 320px) {
+        html {
+            font-size: 313%;
+        }
+    }
+    
+    @media screen and (min-width: 375px) {
+        html {
+            font-size: 366%;
+        }
+    }
+    
+    @media screen and (min-width: 410px) {
+        html {
+            font-size: 400%;
+        }
+    }
+    
+    @media screen and (min-width: 480px) {
+        html {
+            font-size: 469%;
+        }
+    }
+    
+    @media screen and (min-width: 568px) {
+        html {
+            font-size: 555%;
+        }
+    }
+    
+    @media screen and (min-width: 640px) {
+        html {
+            font-size: 625%;
+        }
+    }
+    
+    @media screen and (min-width: 736px) {
+        html {
+            font-size: 719%;
+        }
+    }
+    /*page*/
+    
+    .sWarper {
+        height: 100%;
+        color: #f80;
+    }
+    
+    .sWarper {
+        display: -webkit-box;
+        -webkit-box-orient: horizontal;
+        -webkit-box-pack: center;
+        -webkit-box-align: center;
+        display: box;
+        box-orient: horizontal;
+        box-pack: center;
+        box-align: center;
+    }
+    
+    .sContent {
+        padding: .5rem;
+    }
+    
+    .sContent img {
+        display: block;
+    }
+    
+    .sContent .sLogo {
+        min-width: 100px;
+        max-width: 50%;
+        margin: 0 auto .5rem;
+    }
+    
+    .sContent .sDescribe {
+        margin-bottom: .5rem;
+        line-height: 2;
+        font-size: .2rem;
+        text-indent: 2em;
+    }
+    
+    .sContent .sMark {
+        display: flex;
+        display: -webkit-flex;
+    }
+    
+    .sContent .sMarkItem {
+        flex: 1;
+        -webkit-flex: 1;
+        text-align: center;
+    }
+    
+    .sContent .sMarkItem .sLabel {
+        display: block;
+        margin: 0 10%;
+        padding: 5px 0;
+        background-color: green;
+        color: #fff;
+        font-size: .14rem;
+        border-radius: 4px;
+        line-height: 1.4;
+    }
+    
+    .sContent .sMarkItem .sLabel:hover {
+        background-color: blue;
+    }
+    
+    .sContent .sPic {
+        min-width: 50%;
+        max-width: 100%;
+        margin: .5rem auto 0;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="sWarper">
+        <div class="sContent">
+            <a href="#"><img class="sLogo" src="http://img0.bdstatic.com/img/image/ps-logo.png" alt="LOGO"></a>
+            <div class="sDescribe">V8引擎本身使用了一些最新的编译技术。这使得用Javascript这类脚本语言编写出来的代码运行速度获得了极大提升，却节省了开发成本。对性能的苛求是Node的一个关键因素。 Javascript是一个事件驱动语言，Node利用了这个优点，编写出可扩展性高的服务器。Node采用了一个称为“事件循环(event loop）”的架构，使得编写可扩展性高的服务器变得既容易又安全。提高服务器性能的技巧有多种多样。Node选择了一种既能提高性能，又能减低开发复杂度的架构。这是一个非常重要的特性。并发编程通常很复杂且布满地雷。Node绕过了这些，但仍提供很好的性能。</div>
+            <div class="sMark">
+                <div class="sMarkItem">
+                    <span class="sLabel">V8引擎本身<br>使用了一些最 </span>
+                </div>
+                <div class="sMarkItem">
+                    <span class="sLabel">V8引擎本身<br>使用了一些最 </span>
+                </div>
+            </div>
+            <img class="sPic" src="http://e.hiphotos.baidu.com/image/w%3D310/sign=f10a0456f6deb48ffb69a7dfc01e3aef/d0c8a786c9177f3e6bf9623a75cf3bc79f3d5633.jpg" alt="">
+        </div>
+    </div>
+</body>
+
+</html>

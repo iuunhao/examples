@@ -1,0 +1,35 @@
+body {
+    background: #eee;
+}
+
+.numberBox {
+    margin: 10px auto;
+    /*height: 200px;*/
+    text-align: center;
+}
+
+.oBox {
+    font-family: Arial;
+    font-size: 30px;
+    text-align: center;
+    width: 20px;
+   transition: all 0.6s ease-in-out;
+}
+.oBox span{
+    display: block;
+}
+
+
+.item{
+    display: block;
+    height: 34px;
+    line-height: 34px;
+    color: #f80;
+}
+
+.itemBox{
+    display: inline-block;
+    width: 20px;
+    height: 34px;
+    overflow: hidden;
+}

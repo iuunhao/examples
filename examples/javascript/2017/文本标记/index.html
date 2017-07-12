@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta content="telephone=no" name="format-detection" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        body {
+            padding: 10%;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .text {
+            line-height: 1.5;
+            font-size: 2rem;
+        }
+
+        .text em {
+            font-style: normal;
+            display: inline-block;
+            border-radius: 4px;
+        }
+
+        .tips {
+            position: absolute;
+            display: flex;
+        }
+
+        .tips::after {
+            content: '';
+            width: 0;
+            height: 0;
+            position: absolute;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid #000;
+            left: 50%;
+            bottom: -10px;
+            transform: translateX(-50%);
+        }
+
+        .none {
+            display: none;
+        }
+
+        .tips__item {
+            flex: 1;
+            display: block;
+            padding: 10px 20px;
+            color: #fff;
+            background: #000;
+        }
+
+        .tips__item:first-child {
+            border-radius: 5px 0 0 5px;
+        }
+
+        .tips__item:last-child {
+            border-radius: 0 5px 5px 0;
+        }
+
+        .tips__item:hover {
+            background: #777;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <div class="text">
+            文本（text），从词源上来说，它表示编织的东西。这与中国“文”的概念颇有类似之处。“文”取象人形，指纹身，指花纹。《说文解字叙》称：“仓颉初作书，盖依类象形，故曰文。”“文者，物象之本。”物象均具纹路色彩，因以“文”来指称。《周易·系辞下》记伏羲氏“观鸟兽之文”，鸟兽身上的花纹彩羽。该书又载“物相杂故曰文”，物体的形状、线条色彩相互交错，这也是文。“观乎天文，以察时变，观乎人文，以化成天下。”《说文解字》解释“文”为“错画也。”
+        </div>
+        <div class="tips none">
+            <a class="tips__item" data-color="red" href="javascript:;">红色</a>
+            <a class="tips__item" data-color="blue" href="javascript:;">蓝色</a>
+            <a class="tips__item" data-color="green" href="javascript:;">绿色</a>
+        </div>
+    </div>
+    <script>
+        ;
+        (function (d, log) {
+            ({
+                /**
+                 * [selectText 选择函数]
+                 * @return {[string]} [选中的文本]
+                 */
+                selectText: function () {
+                    if (document.selection) {
+                        return document.selection.createRange().text;
+                    } else {
+                        return document.getSelection().toString();
+                    }
+                },
+                /**
+                 * [els 元素选择]
+                 * @return {[type]} [description]
+                 */
+                els: function () {
+                    this.$root = d.querySelector('.main');
+                    this.$text = this.$root.querySelector('.text');
+                    this.$tips = this.$root.querySelector('.tips');
+                    this.$items = this.$tips.querySelectorAll('.tips__item');
+                },
+                /**
+                 * [init 初始化]
+                 * @return {[type]} [description]
+                 */
+                init: function () {
+                    this.els();
+                    this.selectorFun();
+                    this.itemHand();
+                },
+                /**
+                 * [selectorFun 选择事件]
+                 * @return {[type]} [description]
+                 */
+                selectorFun: function () {
+                    this.$root.addEventListener('mouseup', function (e) {
+                        this.selectTxt = this.selectText();
+                        if (this.selectTxt === '') return false;
+
+                        this.$tips.classList.remove('none');
+                        this.$tips.style.top = e.offsetY + 50 + 'px';
+                        this.$tips.style.left = e.offsetX + 'px';
+                    }.bind(this));
+                },
+                /**
+                 * [itemHand 按钮事件]
+                 * @return {[type]} [description]
+                 */
+                itemHand: function () {
+                    this.$items.forEach(item => item.addEventListener('click', e => {
+                        let globalText = this.$text.innerHTML;
+                        this.$text.innerHTML = globalText.replace(`${this.selectTxt}`,
+                            `<em class="mask" style="background: ${item.dataset.color}; color: #fff">${this.selectTxt}</em>`
+                        )
+                        this.$tips.classList.add('none');
+                    }))
+                }
+            }).init();
+        })(document, window.console.log);
+    </script>
+</body>
+
+</html>
