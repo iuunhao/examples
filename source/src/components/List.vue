@@ -23,6 +23,7 @@
 </template>
 <script>
 import FILES from '@/data/files';
+console.log(FILES)
 Date.prototype.format = function(fmt) { 
 	var o = { 
 		"M+" : this.getMonth()+1,                 //月份 
@@ -61,7 +62,12 @@ export default {
 		postListEd:function(){
 			this.total = 0;
 			let arr = this.postList.filter(item=>{
-				if(item.type !== this.typeVal){
+				if(item.type === this.typeVal){
+					this.total++;
+					return item;
+				}
+				console.log()
+				if(this.typeVal === 'home'){
 					this.total++;
 					return item;
 				}
