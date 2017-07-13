@@ -1,6 +1,6 @@
 <template>
 	<div class="wrap">
-		<h1 class="title"><em class="highlight">WNCSS</em> DEMOS</h1>
+		<h1 class="title"><a href="http://wncss.com" class="highlight">WNCSS <span class="return">点我返回首页</span></a> DEMOS</h1>
 		
 		<List :typeVal="typeStr"></List>
 	</div>
@@ -39,6 +39,49 @@ body{
 	font-family: Langdon;
 	color:#999;
 	padding: 100px 0;
+}
+.highlight{
+	position: relative;
+}
+.highlight:hover .return{
+	display: block;
+}
+.return{
+	font-size: 12px;
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%, 0);
+	top: -40px;
+	white-space: nowrap;
+	padding: 5px;
+	background: #f80;
+	border-radius: 4px;
+	color: #fff;	
+	animation-name: buzz-out;
+	animation-duration: 0.75s;
+	animation-timing-function: linear;
+	animation-iteration-count: 5;
+	display: none;
+}
+.return:after{
+	content: "";
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 5px solid #f80;
+	left: 50%;
+	bottom: -5px;
+	transform: translateX(-50%);
+}
+@-webkit-keyframes buzz-out {
+          0% {
+            transform: translate(-50%, -10px);
+          }
+          100% {
+           transform: translate(-50%, 0);
+          }
 }
 
 @media all and (orientation : portrait){

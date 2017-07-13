@@ -66,7 +66,6 @@ export default {
 					this.total++;
 					return item;
 				}
-				console.log()
 				if(this.typeVal === 'home'){
 					this.total++;
 					return item;
