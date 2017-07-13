@@ -53,10 +53,21 @@ html,body{
 .tool{
     position: fixed;
     top: 30px; 
-    right: 30px;
+    left:  30px;
     width: 30px;
     height: 30px;
-    background: #f80;
+    background: rgba(0,0,0, 0.2);
     border-radius: 100%;
+}
+.tool:after{
+    content: ""; 
+    position: absolute; 
+    left: 50%; 
+    top: 50%;
+    width:  10px;
+    height: 10px;
+    border-top: 1px solid #fff;
+    border-left:1px solid #fff;
+    transform: translate(-30%, -50%) rotate(-45deg);
 }
 </style>
