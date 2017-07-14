@@ -19,7 +19,7 @@ const routesList = [
     }
 ]
 
-Object.keys(FILES.category).map((item)=>{
+Object.keys(FILES.category).forEach((item)=>{
   let obj = {
     path: `/${item}`,
     name: `type${item}`,

@@ -11,7 +11,7 @@
 			<transitionGroup class="post" name="fade">
 				<li class="post__item" v-for="(item, index) in postListEd" key="item" >
 					<router-link class="post__link" :to="{name: 'detail', params: { url: item.url}}">
-						<p  class="post__date">{{new Date(item.ctime).format('yyyyMMdd')}}</p>
+						<p class="post__date">{{new Date(item.ctime).format('yyyyMMdd')}}</p>
 						<h3 class="post__title">{{ item.name }}</h3>	
 						<p class="post__type">{{ item.type }}</p>
 						<em v-if="(Date.parse(new Date()) - item.ctime) < 86400000" class="new"></em>
@@ -60,18 +60,12 @@ export default {
 	computed: {
 		postListEd:function(){
 			this.total = 0;
-			let arr = this.postList.filter(item=>{
-				if(item.type === this.typeVal){
-					this.total++;
-					return item;
-				}
-				if(this.typeVal === 'home'){
+			return this.postList.filter(item=>{
+				if(item.type === this.typeVal || this.typeVal === 'home'){
 					this.total++;
 					return item;
 				}
 			});
-			this.items = arr;
-			return arr;
 		}
 	}
 }
