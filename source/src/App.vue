@@ -26,10 +26,7 @@ export default {
     width: 0;
     height: 0
 }
-@font-face {
-  font-family: Langdon;
-  src: url(require('@/assets/Langdon.otf'));
-}
+
 .highlight{
   color:#f90;
   margin-right: 0.3em;

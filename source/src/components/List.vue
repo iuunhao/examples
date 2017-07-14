@@ -23,7 +23,6 @@
 </template>
 <script>
 import FILES from '@/data/files';
-console.log(FILES)
 Date.prototype.format = function(fmt) { 
 	var o = { 
 		"M+" : this.getMonth()+1,                 //月份 
@@ -79,6 +78,13 @@ export default {
 </script>
 
 <style scoped>
+
+
+@font-face {
+  font-family: Langdon;
+  src: url('../assets/Langdon.otf');
+}
+
 .nav{
 	display: flex;
 	text-align: center;
