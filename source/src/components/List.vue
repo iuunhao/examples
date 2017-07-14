@@ -79,7 +79,6 @@ export default {
 
 <style scoped>
 
-
 @font-face {
   font-family: Langdon;
   src: url('../assets/Langdon.otf');
