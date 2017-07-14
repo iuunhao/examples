@@ -81,7 +81,7 @@ export default {
 
 @font-face {
   font-family: Langdon;
-  src: url('/static/fonts/Langdon.otf');
+  src: url('http://iuunhao.com/examples/static/fonts/Langdon.otf');
 }
 
 .nav{
