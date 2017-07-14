@@ -81,7 +81,7 @@ export default {
 
 @font-face {
   font-family: Langdon;
-  src: url('../assets/Langdon.otf');
+  src: url('/static/fonts/Langdon.otf');
 }
 
 .nav{
