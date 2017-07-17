@@ -6,22 +6,17 @@
 </template>
 
 <script>
+
 export default {
 	name: 'hello',
 	data() {
 		return {
-			msg: 'Welcome to Your Vue.js App',
-			postList: [
-				{
-					title: '英文字母全小写篇',
-					type: 'css',
-					href: 'wwww.baidu.com',
-					date: '2011-01-12',
-					banner: false 
-				}
-			]
 		}
-	}
+	},
+    mounted(){
+        var tits = this.$route.params.url.split('/');
+       document.title = tits[tits.length -2];
+    }
 }
 </script>
 
@@ -33,8 +28,6 @@ html,body{
 .detail{
     height: 100%;
 }
-
-
 
 .iframe{
     border:none;

@@ -9,7 +9,7 @@
 		</div>
 		<div class="postWrap post">
 				<li class="post__item" v-for="(item, index) in postListEd" :key="item" >
-					<router-link class="post__link" :to="{name: 'detail', params: { url: item.url}}">
+					<router-link class="post__link" :to="{name: 'detail', params: { url: item.url, name: item.name}}">
 						<p  class="post__date">{{new Date(item.ctime).format('yyyyMMdd')}}</p>
 						<h3 class="post__title">{{ item.name }}</h3>
 						<p class="post__type">{{ item.type }}</p>
