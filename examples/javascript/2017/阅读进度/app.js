@@ -1,12 +1,12 @@
 ;
 ~(function (d, log) {
-	/**
-	 * ReadBar 构造函数
-	 * @param  {string} id      [id]
-	 * @param  {object} options [setting]
-	 */
+    /**
+     * ReadBar 构造函数
+     * @param  {string} id      [id]
+     * @param  {object} options [setting]
+     */
     var ReadBar = ReadBar || function (id, options) {
-    	//查找滚元素
+        //查找滚元素
         this.id = (typeof id === 'string') ? document.getElementById(id) : document.getElementById('readBar');
 
         // 无new调用
@@ -111,7 +111,7 @@
                 });
                 break;
         }
-      	return true;
+        return true;
     }
     /**
      * init 初始化
@@ -128,11 +128,11 @@
      */
     ReadBar.fn.scrollFun = function () {
         var _this = this,
-            s = parseInt(document.body.scrollTop / (document.body.clientHeight - document.documentElement.clientHeight) * 100);
+            s = parseInt(document.body.scrollTop / (document.body.scrollHeight - document.body.clientHeight) * 100);
         this.css(this.id, {
             [_this.setWorH]: s + '%'
         })
-    }
+    };
 
     ReadBar('readBar', {
         position: 'top',
