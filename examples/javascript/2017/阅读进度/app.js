@@ -83,7 +83,6 @@
                 this.setWorH = 'height';
                 this.css(this.id, {
                     top: 0,
-                    bottom: 0,
                     right: _this.lineW,
                     width: _this.lineW
                 });
@@ -93,14 +92,12 @@
                 this.css(this.id, {
                     left: 0,
                     top: 0,
-                    bottom: 0,
                     width: _this.lineW
                 });
                 break;
             case 'bottom':
                 this.css(this.id, {
                     left: 0,
-                    right: 0,
                     bottom: _this.lineW,
                     height: _this.lineW
                 });
@@ -110,7 +107,6 @@
                 this.css(this.id, {
                     top: 0,
                     left: 0,
-                    right: 0,
                     height: _this.lineW
                 });
                 break;
