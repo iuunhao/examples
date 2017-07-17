@@ -7,8 +7,7 @@
 				<router-link :to="{name: `type${item}`, params: { url: `/${item}`}}" v-for="item in category" key="item" class="nav__item" >{{ item }}</router-link>
 			</div>
 		</div>
-		<div class="postWrap">
-			<transitionGroup class="post" name="fade">
+		<div class="postWrap post">
 				<li class="post__item" v-for="(item, index) in postListEd" :key="item" >
 					<router-link class="post__link" :to="{name: 'detail', params: { url: item.url}}">
 						<p  class="post__date">{{new Date(item.ctime).format('yyyyMMdd')}}</p>
@@ -17,7 +16,6 @@
 						<em v-if="(Date.parse(new Date()) - item.ctime) < 86400000" class="new"></em>
 					</router-link>
 				</li>
-			</transitionGroup>
 		</div>
 	</div>
 </template>
