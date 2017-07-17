@@ -6,13 +6,13 @@
 				<router-link :to="{name: 'home'}" class="nav__item" >All</router-link>
 				<router-link :to="{name: `type${item}`, params: { url: `/${item}`}}" v-for="item in category" key="item" class="nav__item" >{{ item }}</router-link>
 			</div>
-		</div>	
+		</div>
 		<div class="postWrap">
 			<transitionGroup class="post" name="fade">
-				<li class="post__item" v-for="(item, index) in postListEd" key="item" >
+				<li class="post__item" v-for="(item, index) in postListEd" :key="item" >
 					<router-link class="post__link" :to="{name: 'detail', params: { url: item.url}}">
-						<p class="post__date">{{new Date(item.ctime).format('yyyyMMdd')}}</p>
-						<h3 class="post__title">{{ item.name }}</h3>	
+						<p  class="post__date">{{new Date(item.ctime).format('yyyyMMdd')}}</p>
+						<h3 class="post__title">{{ item.name }}</h3>
 						<p class="post__type">{{ item.type }}</p>
 						<em v-if="(Date.parse(new Date()) - item.ctime) < 86400000" class="new"></em>
 					</router-link>
@@ -23,25 +23,25 @@
 </template>
 <script>
 import FILES from '@/data/files';
-Date.prototype.format = function(fmt) { 
-	var o = { 
-		"M+" : this.getMonth()+1,                 //月份 
-		"d+" : this.getDate(),                    //日 
-		"h+" : this.getHours(),                   //小时 
-		"m+" : this.getMinutes(),                 //分 
-		"s+" : this.getSeconds(),                 //秒 
-		"q+" : Math.floor((this.getMonth()+3)/3), //季度 
-		"S"  : this.getMilliseconds()             //毫秒 
-	}; 
+Date.prototype.format = function(fmt) {
+	var o = {
+		"M+" : this.getMonth()+1,                 //月份
+		"d+" : this.getDate(),                    //日
+		"h+" : this.getHours(),                   //小时
+		"m+" : this.getMinutes(),                 //分
+		"s+" : this.getSeconds(),                 //秒
+		"q+" : Math.floor((this.getMonth()+3)/3), //季度
+		"S"  : this.getMilliseconds()             //毫秒
+	};
 	if(/(y+)/.test(fmt)) {
-			fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length)); 
+			fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
 	}
 	for(var k in o) {
 		if(new RegExp("("+ k +")").test(fmt)){
 			fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
 		}
 	}
-	return fmt; 
+	return fmt;
 }
 export default {
 	name: 'list',
@@ -58,13 +58,16 @@ export default {
 	methods: {
 	},
 	computed: {
-		postListEd:function(){
+		postListEd: function(){
 			this.total = 0;
-			return this.postList.filter(item=>{
-				if(item.type === this.typeVal || this.typeVal === 'home'){
+			let arr = this.postList.filter(item => {
+				if(item.type === this.typeVal || this.typeVal === 'home'){ 
 					this.total++;
 					return item;
 				}
+			});
+			return arr.sort((a,b)=>{
+            	return b.birthtime - a.birthtime;
 			});
 		}
 	}
@@ -91,7 +94,7 @@ export default {
 	font-family: Langdon;
 }
 .nav__item:hover{
-	color: #f80;	
+	color: #f80;
 }
 .subTitle{
 	color:#999;
@@ -293,7 +296,7 @@ export default {
 .fade-leave-active {
     transition: all .7s;
     opacity: 1;
-    
+
 }
 .fade-enter,
 .fade-leave-to {
@@ -314,7 +317,7 @@ export default {
   .nav__item{
   	padding:  20px;
   	margin-bottom: 20px;
-  }	
+  }
 }
 
 
