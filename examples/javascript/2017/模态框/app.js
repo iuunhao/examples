@@ -15,9 +15,14 @@
         this.opts.cancelCallback = this.opts.cancelCallback || function () {};
 
         this.init();
+
+
     }
     Modal.fn = Modal.prototype;
 
+    Modal.fn.wheel = function (e) {
+        e.preventDefault();
+    }
     Modal.fn.getElements = function () {
         this.els = {};
         this.els.close = this.id.querySelector('.modal__close');
@@ -112,6 +117,7 @@
         var _this = this;
         this.baseCreate();
         this.getElements();
+        window.addEventListener('mousewheel', this.wheel, false);
         if (this.opts.hasBlur) this.els.blurId.classList.toggle('blur');
         this.id.classList.toggle('none');
         this.id.addEventListener('click', function (ev) {
@@ -135,6 +141,7 @@
         if (this.opts.hasBlur) this.els.blurId.classList.remove('blur');
         this.id.innerHTML = null;
         this.id.classList.add('none');
+        window.removeEventListener('mousewheel', this.wheel, false);
     }
     Modal.fn.cancelEvent = function ($this) {
         this.opts.cancelCallback.call(this, $this);
@@ -144,5 +151,6 @@
         this.opts.confirmCallback.call(this, $this);
         this.closeEvent();
     }
+    Modal.fn.nowhell = function () {}
     window.Modal = Modal;
 }(document));
