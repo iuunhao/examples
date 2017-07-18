@@ -166,7 +166,7 @@
 
     new NumberAnimation('numberBox', {
         // 数值
-        number: '1000000000',
+        number: '12347829',
         // 变动最大限制
         maxNumber: 20,
         // 是否随机变化
@@ -178,7 +178,7 @@
     });
      new NumberAnimation('numberBox1', {
         // 数值
-        number: '10000',
+        number: '884235',
         // 变动最大限制
         maxNumber: 20,
         // 是否随机变化

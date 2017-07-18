@@ -1,6 +1,3 @@
-body {
-    background: #eee;
-}
 
 .numberBox {
     margin: 10px auto;
@@ -17,6 +14,7 @@ body {
 }
 .oBox span{
     display: block;
+    color: #555;
 }
 
 
@@ -32,4 +30,12 @@ body {
     width: 20px;
     height: 34px;
     overflow: hidden;
+}
+
+.wrap{
+    position: fixed;
+    left: 50%;
+    top:50%;
+    transform: translate(-50%,-50%);
+
 }
