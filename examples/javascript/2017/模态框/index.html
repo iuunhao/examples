@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1, user-scalable=no"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta content="telephone=no" name="format-detection" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>模态框</title>
+    <link rel="stylesheet" type="text/css" href="../../../libs/css/normalize7.0.css">
+    <link rel="stylesheet" type="text/less" href="less.less">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.5.3/less.min.js"></script>
+</head>
+
+<body>
+    <div id="wrap" class="">
+        <div class="btns">
+            <a id="btn1" href="javascript:;" class="btn">两个按钮</a>
+            <a id="btn2" href="javascript:;" class="btn">一个按钮</a>
+            <a id="btn3" href="javascript:;" class="btn">背景模糊</a>
+            <a id="btn4" href="javascript:;" class="btn">无关闭按钮</a>
+            <a id="btn5" href="javascript:;" class="btn">标题居中</a>
+        </div>
+        <img class="img" src="https://ws2.sinaimg.cn/large/006tKfTcly1fhnyzwjb56j31e04v1az0.jpg" alt="">
+    </div>
+    <div id="modal1" class="modal none">
+    </div>
+    <script src="app.js"></script>
+    <script>
+        ;
+        ~(function (d, log) {
+            d.getElementById('btn1').addEventListener('click', function () {
+                new Modal('modal1', {
+                    hasClose: true,
+                    title: '温馨提示',
+                    msg: '两个按钮',
+                    hasConfirm: true,
+                    confirmTxt: '确定',
+                    confirmCallback: function ($this) {
+                        log($this.innerHTML, 'cancel callback');
+                    },
+                    hasCancel: true,
+                    cancelTxt: '取消',
+                    cancelCallback: function ($this) {
+                        log($this.innerHTML);
+                    }
+                })
+            });
+
+            d.getElementById('btn2').addEventListener('click', function () {
+                new Modal('modal1', {
+                    hasClose: true,
+                    title: '提示信息',
+                    msg: '一个按钮',
+                    hasConfirm: true,
+                    confirmTxt: '确定',
+                    confirmCallback: function ($this) {
+                        log($this.innerHTML, 'cancel callback');
+                    }
+                })
+            });
+
+            d.getElementById('btn3').addEventListener('click', function () {
+                new Modal('modal1', {
+                    hasClose: true,
+                    title: '提示信息',
+                    msg: '背景模糊',
+                    hasConfirm: true,
+                    confirmTxt: '确定',
+                    confirmCallback: function ($this) {
+                        log($this.innerHTML, 'cancel callback');
+                    },
+                    hasBlur: true,
+                    blurId: 'wrap'
+                })
+            });
+
+
+            d.getElementById('btn4').addEventListener('click', function () {
+                new Modal('modal1', {
+                    hasClose: false,
+                    title: '提示信息',
+                    msg: '隐藏关闭按钮',
+                    hasConfirm: true,
+                    confirmTxt: '确定',
+                    confirmCallback: function ($this) {
+                        log($this.innerHTML, 'cancel callback');
+                    },
+                    hasBlur: true,
+                    blurId: 'wrap'
+                })
+            });
+
+            d.getElementById('btn5').addEventListener('click', function () {
+                new Modal('modal1', {
+                    hasClose: false,
+                    title: '提示信息',
+                    titleAlign: 'center',
+                    msg: '居中显示',
+                    hasConfirm: true,
+                    confirmTxt: '确定',
+                    confirmCallback: function ($this) {
+                        log($this.innerHTML, 'cancel callback');
+                    },
+                    hasBlur: true,
+                    blurId: 'wrap'
+                })
+            });
+
+        }(document, console.log));
+    </script>
+</body>
+
+</html>
