@@ -13,7 +13,7 @@
 						<p  class="post__date">{{new Date(item.ctime).format('yyyyMMdd')}}</p>
 						<h3 class="post__title">{{ item.name }}</h3>
 						<p class="post__type">{{ item.type }}</p>
-						<em v-if="(Date.parse(new Date()) - item.ctime) < 86400000" class="new"></em>
+						<em v-if="(Date.parse(new Date()) - item.birthtime) < 86400000" class="new"></em>
 					</router-link>
 				</li>
 		</div>
